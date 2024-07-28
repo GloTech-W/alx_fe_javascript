@@ -102,16 +102,19 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
   }
   
   // Function to fetch quotes from a simulated server
-  function fetchQuotesFromServer() {
-    // Simulate server response with a delay
-    setTimeout(() => {
-      const serverQuotes = [
-        { text: "The best way to predict the future is to invent it.", category: "Inspiration" },
-        { text: "An unexamined life is not worth living.", category: "Philosophy" },
-      ];
+  async function fetchQuotesFromServer() {
+    try {
+      const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+      const serverQuotes = await response.json();
+      
+      // Simulate converting server response to quote objects
+      const newQuotes = serverQuotes.map(post => ({
+        text: post.title,
+        category: "Server"
+      }));
   
       // Merge server quotes with local quotes, giving server quotes precedence in case of conflicts
-      serverQuotes.forEach(serverQuote => {
+      newQuotes.forEach(serverQuote => {
         const existingQuoteIndex = quotes.findIndex(quote => quote.text === serverQuote.text);
         if (existingQuoteIndex !== -1) {
           quotes[existingQuoteIndex] = serverQuote; // Overwrite local quote with server quote
@@ -123,7 +126,9 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
       saveQuotes();
       populateCategories();
       alert('Quotes synced with the server successfully!');
-    }, 1000); // Simulate 1 second server delay
+    } catch (error) {
+      console.error('Failed to fetch quotes from server:', error);
+    }
   }
   
   // Display the last viewed quote if available in session storage
