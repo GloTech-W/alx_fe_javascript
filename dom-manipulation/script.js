@@ -43,7 +43,7 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
       saveQuotes();
       document.getElementById('newQuoteText').value = '';
       document.getElementById('newQuoteCategory').value = '';
-      updateCategoryFilter();
+      populateCategories();
       alert('New quote added successfully!');
     } else {
       alert('Please enter both a quote and a category.');
@@ -68,14 +68,14 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
       const importedQuotes = JSON.parse(event.target.result);
       quotes.push(...importedQuotes);
       saveQuotes();
-      updateCategoryFilter();
+      populateCategories();
       alert('Quotes imported successfully!');
     };
     fileReader.readAsText(event.target.files[0]);
   }
   
   // Function to populate the category filter dropdown
-  function updateCategoryFilter() {
+  function populateCategories() {
     const categoryFilter = document.getElementById('categoryFilter');
     const categories = [...new Set(quotes.map(quote => quote.category))];
     categoryFilter.innerHTML = '<option value="all">All Categories</option>';
@@ -108,7 +108,7 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
       const quoteDisplay = document.getElementById('quoteDisplay');
       quoteDisplay.innerHTML = `<p>"${lastQuote.text}" - ${lastQuote.category}</p>`;
     }
-    updateCategoryFilter();
+    populateCategories();
     const lastSelectedCategory = localStorage.getItem('lastSelectedCategory');
     if (lastSelectedCategory) {
       document.getElementById('categoryFilter').value = lastSelectedCategory;
