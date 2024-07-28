@@ -163,7 +163,7 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
     // Notify user of the sync
     const notification = document.createElement('div');
     notification.id = 'syncNotification';
-    notification.textContent = 'Quotes synced with the server successfully!';
+    notification.textContent = 'Quotes synced with server!';
     notification.style.position = 'fixed';
     notification.style.bottom = '10px';
     notification.style.right = '10px';
