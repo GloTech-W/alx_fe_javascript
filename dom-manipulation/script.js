@@ -101,6 +101,31 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
     localStorage.setItem('lastSelectedCategory', selectedCategory);
   }
   
+  // Function to fetch quotes from a simulated server
+  function fetchQuotesFromServer() {
+    // Simulate server response with a delay
+    setTimeout(() => {
+      const serverQuotes = [
+        { text: "The best way to predict the future is to invent it.", category: "Inspiration" },
+        { text: "An unexamined life is not worth living.", category: "Philosophy" },
+      ];
+  
+      // Merge server quotes with local quotes, giving server quotes precedence in case of conflicts
+      serverQuotes.forEach(serverQuote => {
+        const existingQuoteIndex = quotes.findIndex(quote => quote.text === serverQuote.text);
+        if (existingQuoteIndex !== -1) {
+          quotes[existingQuoteIndex] = serverQuote; // Overwrite local quote with server quote
+        } else {
+          quotes.push(serverQuote); // Add new server quote
+        }
+      });
+  
+      saveQuotes();
+      populateCategories();
+      alert('Quotes synced with the server successfully!');
+    }, 1000); // Simulate 1 second server delay
+  }
+  
   // Display the last viewed quote if available in session storage
   window.onload = function() {
     const lastQuote = JSON.parse(sessionStorage.getItem('lastQuote'));
@@ -114,6 +139,7 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
       document.getElementById('categoryFilter').value = lastSelectedCategory;
       filterQuotes();
     }
+    fetchQuotesFromServer(); // Fetch quotes from the simulated server on page load
   };
   
   // Create the form for adding new quotes on page load
