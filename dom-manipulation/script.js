@@ -1,4 +1,4 @@
- // Initialize an array of quote objects
+// Initialize an array of quote objects
 const quotes = [
     { text: "The only limit to our realization of tomorrow is our doubts of today.", category: "Motivation" },
     { text: "The purpose of our lives is to be happy.", category: "Happiness" },
@@ -10,7 +10,7 @@ const quotes = [
     const randomIndex = Math.floor(Math.random() * quotes.length);
     const randomQuote = quotes[randomIndex];
     const quoteDisplay = document.getElementById('quoteDisplay');
-    quoteDisplay.textContent = `"${randomQuote.text}" - ${randomQuote.category}`;
+    quoteDisplay.innerHTML = `<p>"${randomQuote.text}" - ${randomQuote.category}</p>`;
   }
   
   // Function to add a new quote
