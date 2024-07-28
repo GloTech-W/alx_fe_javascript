@@ -115,21 +115,10 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
         category: "Server"
       }));
   
-      // Merge server quotes with local quotes, giving server quotes precedence in case of conflicts
-      newQuotes.forEach(serverQuote => {
-        const existingQuoteIndex = quotes.findIndex(quote => quote.text === serverQuote.text);
-        if (existingQuoteIndex !== -1) {
-          quotes[existingQuoteIndex] = serverQuote; // Overwrite local quote with server quote
-        } else {
-          quotes.push(serverQuote); // Add new server quote
-        }
-      });
-  
-      saveQuotes();
-      populateCategories();
-      alert('Quotes synced with the server successfully!');
+      return newQuotes;
     } catch (error) {
       console.error('Failed to fetch quotes from server:', error);
+      return [];
     }
   }
   
@@ -153,6 +142,45 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
     }
   }
   
+  // Function to sync quotes with the server
+  async function syncQuotes() {
+    const serverQuotes = await fetchQuotesFromServer();
+  
+    // Resolve conflicts: server quotes take precedence
+    serverQuotes.forEach(serverQuote => {
+      const existingQuoteIndex = quotes.findIndex(quote => quote.text === serverQuote.text);
+      if (existingQuoteIndex !== -1) {
+        quotes[existingQuoteIndex] = serverQuote; // Overwrite local quote with server quote
+      } else {
+        quotes.push(serverQuote); // Add new server quote
+      }
+    });
+  
+    saveQuotes();
+    populateCategories();
+    filterQuotes();
+  
+    // Notify user of the sync
+    const notification = document.createElement('div');
+    notification.id = 'syncNotification';
+    notification.textContent = 'Quotes synced with the server successfully!';
+    notification.style.position = 'fixed';
+    notification.style.bottom = '10px';
+    notification.style.right = '10px';
+    notification.style.backgroundColor = 'green';
+    notification.style.color = 'white';
+    notification.style.padding = '10px';
+    notification.style.borderRadius = '5px';
+    document.body.appendChild(notification);
+  
+    setTimeout(() => {
+      document.body.removeChild(notification);
+    }, 5000);
+  }
+  
+  // Periodically check for new quotes from the server
+  setInterval(syncQuotes, 60000); // Check every 60 seconds
+  
   // Display the last viewed quote if available in session storage
   window.onload = function() {
     const lastQuote = JSON.parse(sessionStorage.getItem('lastQuote'));
@@ -166,7 +194,7 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
       document.getElementById('categoryFilter').value = lastSelectedCategory;
       filterQuotes();
     }
-    fetchQuotesFromServer(); // Fetch quotes from the simulated server on page load
+    syncQuotes(); // Fetch quotes from the simulated server on page load
   };
   
   // Create the form for adding new quotes on page load
